@@ -14,7 +14,6 @@ class Hmm:
         self.state_keys = []
         self.emissions = {}
         self.emissions_list = []
-
         pass
 
     class State:
@@ -77,8 +76,13 @@ class Hmm:
         current_stage = self.stage_table[init_stage]
         possible_list.append(init_stage)
         for emissions in emission_list:
+            if emissions[0] == '':
+                possible_list.append(current_stage.state)
+                continue
+
             s_i = 0
             prob_list = []
+
             for possible_state in current_stage.next_state:
                 possible_prob = current_prob
                 i = 0
@@ -87,19 +91,24 @@ class Hmm:
                         possible_prob *= e
                         # print(e)
                     else:
-                        possible_prob *= 1 - e
+                        # possible_prob *= (1 - e) * 0.5
                         # print(1 - e)
+                        pass
                     i += 1
+                # print(current_stage.probabilities[s_i])
                 possible_prob *= current_stage.probabilities[s_i]
                 # print(current_stage.probabilities[s_i])
                 prob_list.append(possible_prob)
                 s_i += 1
             if max(prob_list) != 0.0:
                 max_pos_stage = current_stage.next_state[prob_list.index(max(prob_list))]
+                print(current_stage.next_state)
+                print(emissions)
                 possible_list.append(max_pos_stage)
                 current_stage = self.stage_table[max_pos_stage]
                 current_prob = max(prob_list)
                 print(prob_list)
+                print(current_prob)
             else:
                 possible_list.append(current_stage.state)
         return possible_list
@@ -144,9 +153,9 @@ def test():
     print(hmm.stage_table['AWARE'].next_state)
     print(hmm.emission_table)
 
-    fm = FileManager("D:\\PyProject\\AI_HMM\\AI_HMM\\examples\\hmm_customer_1586733277027.txt")
-    print(fm.read_emissions())
+    fm = FileManager("D:\\PyProject\\AI_HMM\\AI_HMM\\examples\\hmm_customer_1586733276720.txt")
     emission_list = fm.read_emissions()
+    print(emission_list)
     print(hmm.assume('ZERO', emission_list))
 
 
